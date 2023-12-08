@@ -1,0 +1,26 @@
+name: Unit Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+          architecture: "x64"
+    - name: Installation
+      run: |
+        python3 -m pip install --upgrade pip setuptools wheel
+        pip3 install -r requirements_x86.txt
+        pip3 install apache-tvm
+    - name: Run Pytest
+      run: python3 -m pytest -s -v
