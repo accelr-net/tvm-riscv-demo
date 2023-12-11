@@ -16,6 +16,7 @@ labels_path = "./models/synset.txt"
 def resnet18(target: tvm.target.Target) -> tvm.runtime.Module:
   if not os.path.exists(model_path): request.urlretrieve(model_url, model_path)
   if not os.path.exists(labels_path): request.urlretrieve(labels_url, labels_path)
+  
   onnx_model = onnx.load(model_path)
   image_data = np.expand_dims(np.transpose(np.random.rand(224, 224, 3).astype(np.float32) * 255.0, (2, 0, 1)), axis=0)
   shape_dict = {"data": image_data.shape}
