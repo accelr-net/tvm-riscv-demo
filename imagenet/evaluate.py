@@ -7,14 +7,13 @@ class evaluator:
   json_path: str = "./imagenet/log.json"
 
   def __init__(self, arch: str):
-    self.arch = arch
-    self.output_json = {}
+    self.arch = arch; self.output_json = {}
     try:
-      with open(evaluator.json_path, 'r') as file:
-        self.output_json = json.load(file)
+      json_file = open(evaluator.json_path, 'r')
+      self.output_json = json.load(json_file)
     except FileNotFoundError:
-      with open(evaluator.json_path, 'w') as file:
-        json.dump({}, file)
+      json_file = open(evaluator.json_path, 'w')
+      json_file = json.dump({}, json_file)
 
   def log(self, key: str, output: Tuple[float, str]) -> None:
     if key not in self.output_json:
@@ -59,5 +58,5 @@ class evaluator:
     print(" verification completed ... \n")
 
   def end(self) -> None:
-    with open(evaluator.json_path, 'w') as file:
-      json.dump(self.output_json, file, indent=4)
+    json_file = open(evaluator.json_path, 'w')
+    json.dump(self.output_json, json_file, indent=4)
