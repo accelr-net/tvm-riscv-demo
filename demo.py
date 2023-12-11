@@ -71,7 +71,7 @@ if __name__ == "__main__":
       print(" preposessing imagenet data ... \n\n")
       preprocess_imagenet_data(int(args.numsteps), "./data/imagenet/imagetensors/")
     
-    # save imagenet input data tensors to disk
+    # save speechcommands input data tensors to disk
     if len(glob.glob(os.path.join("./data/speechcommands/speechtensors/", '*.npy'))) is not int(args.numsteps):
       print(" preposessing kws data ... \n\n")
       preprocess_speechcommands_data(int(args.numsteps), "./data/speechcommands/speechtensors/")      
