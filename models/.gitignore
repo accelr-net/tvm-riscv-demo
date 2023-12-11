@@ -1,4 +1,6 @@
 # models
 
 *.onnx
+*.pt
+*.pickle
 *.txt

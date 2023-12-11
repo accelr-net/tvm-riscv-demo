@@ -1,3 +1,7 @@
 numpy
 onnx
 pillow
+torch
+torchvision
+torchaudio
+librosa

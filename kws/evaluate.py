@@ -1,10 +1,12 @@
 # Copyright © 2023 ACCELR
 
 import json
+import pickle
+import numpy as np
 from typing import Tuple
 
 class evaluator:
-  json_path: str = "./imagenet/log.json"
+  json_path: str = "./kws/log.json"
 
   def __init__(self, arch: str):
     self.arch = arch; self.output_json = {}
@@ -15,11 +17,17 @@ class evaluator:
       json_file = open(evaluator.json_path, 'w')
       json.dump({}, json_file)
 
-  def log(self, key: str, output: Tuple[float, str]) -> None:
+    labels = pickle.load(open("./models/lable.pickle", 'rb'))
+    self.class_to_idx = {c: i for i, c in enumerate(labels)}
+    self.idx_to_class = {v: k for k, v in self.class_to_idx.items()}
+
+  def log(self, key: str, output: np.ndarray) -> None:
+    top_output = np.argmax(output)
+    label = self.idx_to_class[top_output]
     if key not in self.output_json:
-      self.output_json[key] = { self.arch : { "scores" : [str(i)for i in output[0]], "labels" : [str(i)for i in output[1]] } }
+      self.output_json[key] = { self.arch : { "score" : int(top_output), "label" :  label} }
     else:
-      self.output_json[key][self.arch] = { "scores" : [str(i)for i in output[0]], "labels" : [str(i)for i in output[1]] }
+      self.output_json[key][self.arch] = { "score" : int(top_output), "label" :  label}
 
   def process(self, num_steps: int) -> None:
     print(" starting verification ... \n")
@@ -33,12 +41,11 @@ class evaluator:
         print(" run the test in x86_64 first ... \n")
         return
 
-      x86_64_scores = self.output_json[key]["x86_64"]["scores"]
-      riscv64_scores = self.output_json[key]["riscv64"]["scores"]
-      is_equal = True; rounding_factor = 6
-      for i in range(len(x86_64_scores)):
-        is_equal = False if round(float(x86_64_scores[i]), rounding_factor) != round(float(riscv64_scores[i]), rounding_factor) else True
-      if is_equal:
+      x86_64_score = self.output_json[key]["x86_64"]["score"]
+      riscv64_score = self.output_json[key]["riscv64"]["score"]
+      x86_64_label = self.output_json[key]["x86_64"]["label"]
+      riscv64_label = self.output_json[key]["riscv64"]["label"]
+      if  x86_64_score == riscv64_score and x86_64_label == riscv64_label:
         self.output_json[key]["status"] = "passed"
         passed = passed + 1
       else:
@@ -53,8 +60,10 @@ class evaluator:
     for item in failed_items:
       key = list(item.keys())[0]
       print(f"\titem: {key}")
-      print(f"\tx86_64 scores  : {item[key]['x86_64']['scores']}")
-      print(f"\triscv64 scores : {item[key]['riscv64']['scores']}")
+      print(f"\tx86_64 score  : {item[key]['x86_64']['score']}")
+      print(f"\tx86_64 label  : {item[key]['x86_64']['label']}")
+      print(f"\triscv64 score : {item[key]['riscv64']['score']}")
+      print(f"\triscv64 label : {item[key]['riscv64']['label']}")
       print()
     print(" verification completed ... \n")
 

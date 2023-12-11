@@ -20,7 +20,7 @@ def _imagenet_transforms(image: Image.Image) -> np.ndarray:
   image_data = np.expand_dims(norm_image_data, axis=0)
   return image_data  
 
-def preprocess_imagenet_data(num_steps: int, data_dir: str, tinyimagenet_path:str=tinyimagenet_path) -> None:
+def preprocess_imagenet_data(num_steps: int, data_dir: str) -> None:
   if not os.path.exists(tinyimagenet_path): request.urlretrieve(tinyimagenet_url, tinyimagenet_path)
   with zipfile.ZipFile(tinyimagenet_path, 'r') as zip_ref:
     zip_ref.extractall("./data/imagenet/")

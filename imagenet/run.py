@@ -10,6 +10,10 @@ from .evaluate import evaluator
 labels_url = "https://s3.amazonaws.com/onnx-model-zoo/synset.txt"
 labels_path = "./data/synset.txt"
 
+def pretty_print(input: str) -> None:
+  pad_length = max(0, 100 - len(input))
+  print(f"\n{'-' * (pad_length // 2) + input + '-' * (pad_length // 2 + pad_length % 2)}\n\n")
+
 def softmax(input: np.ndarray) -> np.ndarray:
   shape = input.shape
   input = input.flatten()
@@ -30,7 +34,7 @@ def _postprocess(tvm_output: np.ndarray) -> None:
 def resnet18_session(arch: str, num_steps: int) -> None:
   eval = evaluator(arch)
   lib_path = "./bin/resnet18_arch.tar".replace("arch", arch)
-  print(f"\n~ TVM resnet18 inference session on {arch} ~\n\n")
+  pretty_print(f" TVM resnet18 inference session on {arch} ")
   print(f" dynamic loading compiled library from {lib_path}! \n")
 
   loaded_lib = tvm.runtime.load_module(lib_path)
@@ -50,4 +54,4 @@ def resnet18_session(arch: str, num_steps: int) -> None:
   
   if arch == "riscv64": eval.process(num_steps)
   eval.end()
-  print(f"\n~ End of TVM resnet18 inference session on {arch} ~\n\n")
+  pretty_print(f" End of TVM resnet18 inference session on {arch} ")
