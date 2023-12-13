@@ -1,6 +1,7 @@
 # Copyright © 2023 ACCELR
 
 import json
+import numpy as np
 from typing import Tuple
 
 class evaluator:
@@ -33,12 +34,9 @@ class evaluator:
         print(" run the test in x86_64 first ... \n")
         return
 
-      x86_64_scores = self.output_json[key]["x86_64"]["scores"]
-      riscv64_scores = self.output_json[key]["riscv64"]["scores"]
-      is_equal = True; rounding_factor = 6
-      for i in range(len(x86_64_scores)):
-        is_equal = False if round(float(x86_64_scores[i]), rounding_factor) != round(float(riscv64_scores[i]), rounding_factor) else True
-      if is_equal:
+      x86_64_scores = np.array(list(map(float, self.output_json[key]["x86_64"]["scores"])))
+      riscv64_scores = np.array(list(map(float, self.output_json[key]["riscv64"]["scores"])))
+      if np.testing.assert_allclose(x86_64_scores, riscv64_scores, rtol=1e-05) is None:
         self.output_json[key]["status"] = "passed"
         passed = passed + 1
       else:

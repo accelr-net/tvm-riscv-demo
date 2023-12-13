@@ -17,7 +17,7 @@ def kws_session(arch: str, num_steps: int) -> None:
   print(f" dynamic loading compiled library from {lib_path}! \n")
 
   loaded_lib = tvm.runtime.load_module(lib_path)
-  runtime_module = graph_executor.GraphModule(loaded_lib["default"](tvm.device(str("llvm"), 0)))
+  runtime_module = graph_executor.GraphModule(loaded_lib["default"](tvm.device("llvm", 0)))
   tensor_dir = "./data/speechcommands/speechtensors/"
   tensors = os.listdir(tensor_dir)
   tensors = [tensor for tensor in tensors if tensor != '.gitignore']
