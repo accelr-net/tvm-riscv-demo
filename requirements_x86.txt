@@ -2,6 +2,7 @@ numpy
 onnx
 pillow
 torch
+onnx2pytorch
 torchvision
 torchaudio
 librosa

@@ -31,7 +31,6 @@ if __name__ == "__main__":
     from tirop.compile import teop
     from imagenet.compile import resnet18
     from kws.compile import kwsrn18
-    from imagenet.dataloader import preprocess_imagenet_data
     from kws.dataloader import preprocess_speechcommands_data
     import tvm
 
@@ -66,11 +65,6 @@ if __name__ == "__main__":
         kwsrn18_module = kwsrn18(devices["riscv64"])
         kwsrn18_module.export_library("./bin/kws_riscv64.tar")
     
-    # save imagenet input data tensors to disk
-    if len(glob.glob(os.path.join("./data/imagenet/imagetensors/", '*.npy'))) is not int(args.numsteps):
-      print(" preposessing imagenet data ... \n\n")
-      preprocess_imagenet_data(int(args.numsteps), "./data/imagenet/imagetensors/")
-    
     # save speechcommands input data tensors to disk
     if len(glob.glob(os.path.join("./data/speechcommands/speechtensors/", '*.npy'))) is not int(args.numsteps):
       print(" preposessing kws data ... \n\n")
@@ -83,13 +77,13 @@ if __name__ == "__main__":
   from imagenet.run import resnet18_session
   from kws.run import kws_session
 
-  if args.tirop: teop_session(platform_arch)
-  if args.imagenet: resnet18_session(platform_arch, int(args.numsteps))
-  if args.kws: kws_session(platform_arch, int(args.numsteps))
+  if args.tirop: teop_session()
+  if args.imagenet: resnet18_session(int(args.numsteps))
+  if args.kws: kws_session(int(args.numsteps))
   if args.all:
-    teop_session(platform_arch)
-    resnet18_session(platform_arch, int(args.numsteps))
-    kws_session(platform_arch, int(args.numsteps))
+    teop_session()
+    resnet18_session(int(args.numsteps))
+    kws_session(int(args.numsteps))
 
   print("-------------------")
   print("~ End of the Demo ~")

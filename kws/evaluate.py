@@ -31,7 +31,7 @@ class evaluator:
 
   def process(self, num_steps: int) -> None:
     print(" starting verification ... \n")
-    print(f" {num_steps} verification test cases detected ... \n")
+    print(f" {num_steps} verification test case(s) detected ... \n")
 
     passed = 0; failed = 0; failed_items = []; step_counter = 0
     for key in self.output_json:

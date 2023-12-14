@@ -3,17 +3,20 @@
 import tvm
 from tvm.contrib import graph_executor
 import os
+import platform
 import numpy as np
 from .evaluate import evaluator
+
+platform_arch = platform.machine().lower()
 
 def pretty_print(input: str) -> None:
   pad_length = max(0, 100 - len(input))
   print(f"\n{'-' * (pad_length // 2) + input + '-' * (pad_length // 2 + pad_length % 2)}\n\n")
 
-def kws_session(arch: str, num_steps: int) -> None:
-  eval = evaluator(arch)
-  lib_path = "./bin/kws_arch.tar".replace("arch", arch)
-  pretty_print(f" TVM kws inference session on {arch} ")
+def kws_session(num_steps: int) -> None:
+  eval = evaluator(platform_arch)
+  lib_path = "./bin/kws_arch.tar".replace("arch", platform_arch)
+  pretty_print(f" TVM kws inference session on {platform_arch} ")
   print(f" dynamic loading compiled library from {lib_path}! \n")
 
   loaded_lib = tvm.runtime.load_module(lib_path)
@@ -30,6 +33,6 @@ def kws_session(arch: str, num_steps: int) -> None:
     output = runtime_module.get_output(0)
     eval.log(tensors[tensor_idx], output.numpy()[0])
   
-  if arch == "riscv64": eval.process(num_steps)
+  if platform_arch == "riscv64": eval.process(num_steps)
   eval.end()
-  pretty_print(f" End of TVM kws inference session on {arch} ")
+  pretty_print(f" End of TVM kws inference session on {platform_arch} ")
