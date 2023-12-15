@@ -5,15 +5,18 @@ import numpy as np
 from typing import Tuple
 
 class evaluator:
-  json_path: str = "./imagenet/log.json"
-
-  def __init__(self, arch: str):
+  def __init__(self, arch: str, json_path: str):
     self.arch = arch; self.output_json = {}
+    self.json_path = json_path
     try:
-      json_file = open(evaluator.json_path, 'r')
-      self.output_json = json.load(json_file)
+      if arch == "x86_64":
+        json_file = open(self.json_path, 'w')
+        json.dump({}, json_file)
+      else:
+        json_file = open(self.json_path, 'r')
+        self.output_json = json.load(json_file)
     except FileNotFoundError:
-      json_file = open(evaluator.json_path, 'w')
+      json_file = open(self.json_path, 'w')
       json.dump({}, json_file)
 
   def log(self, key: str, output: Tuple[float, str], pt: bool=False) -> None:
@@ -49,6 +52,8 @@ class evaluator:
       if self.output_json[key].get("x86_64") is None:
         print(" run the test in x86_64 first ... \n")
         return
+
+      self.output_json[key]["test no"] = step_counter
 
       x86_64_scores = np.array(list(map(float, self.output_json[key]["x86_64"]["scores"])))
       riscv64_scores = np.array(list(map(float, self.output_json[key]["riscv64"]["scores"])))
@@ -86,10 +91,20 @@ class evaluator:
         pytorch_riscv64_failed_top_one = pytorch_riscv64_failed_top_one + 1
         pytorch_riscv64_failed_top_one_items.append({key: self.output_json[key]})
 
+    x86_64_riscv64_passed_top_five_accuracy = x86_64_riscv64_passed_top_five*100/num_steps
+    pytorch_riscv64_passed_top_five_accuracy = pytorch_riscv64_passed_top_five*100/num_steps
+    x86_64_riscv64_passed_top_one_accuracy = x86_64_riscv64_passed_top_one*100/num_steps
+    pytorch_riscv64_passed_top_one_accuracy = pytorch_riscv64_passed_top_one*100/num_steps
+
+    self.output_json["x86_64_riscv64_passed_top_five_accuracy"] = x86_64_riscv64_passed_top_five_accuracy
+    self.output_json["pytorch_riscv64_passed_top_five_accuracy"] = pytorch_riscv64_passed_top_five_accuracy
+    self.output_json["x86_64_riscv64_passed_top_one_accuracy"] = x86_64_riscv64_passed_top_one_accuracy
+    self.output_json["pytorch_riscv64_passed_top_one_accuracy"] = pytorch_riscv64_passed_top_one_accuracy
+
     print(" \t# x86_64 vs riscv64 top five test summary ... \n")
     print(f"\t  - passed cases: {x86_64_riscv64_passed_top_five}")
     print(f"\t  - failed cases: {x86_64_riscv64_failed_top_five}")
-    print(f"\t  - accuracy    : {x86_64_riscv64_passed_top_five*100/num_steps} %\n")
+    print(f"\t  - accuracy    : {x86_64_riscv64_passed_top_five_accuracy} %\n")
     if x86_64_riscv64_failed_top_five > 0: print("\t  - summary report for failed test cases ...\n")
     for item in x86_64_riscv64_failed_top_five_items:
       key = list(item.keys())[0]
@@ -101,7 +116,7 @@ class evaluator:
     print(" \t# pytorch vs riscv64 top five test summary ... \n")
     print(f"\t  - passed cases: {pytorch_riscv64_passed_top_five}")
     print(f"\t  - failed cases: {pytorch_riscv64_failed_top_five}")
-    print(f"\t  - accuracy    : {pytorch_riscv64_passed_top_five*100/num_steps} %\n")
+    print(f"\t  - accuracy    : {pytorch_riscv64_passed_top_five_accuracy} %\n")
     if pytorch_riscv64_failed_top_five > 0: print("\t  - summary report for failed test cases ...\n")
     for item in pytorch_riscv64_failed_top_five_items:
       key = list(item.keys())[0]
@@ -113,7 +128,7 @@ class evaluator:
     print(" \t# x86_64 vs riscv64 top one test summary ... \n")
     print(f"\t  - passed cases: {x86_64_riscv64_passed_top_one}")
     print(f"\t  - failed cases: {x86_64_riscv64_failed_top_one}")
-    print(f"\t  - accuracy    : {x86_64_riscv64_passed_top_one*100/num_steps} %\n")
+    print(f"\t  - accuracy    : {x86_64_riscv64_passed_top_one_accuracy} %\n")
     if x86_64_riscv64_failed_top_one > 0: print("\t  - summary report for failed test cases ...\n")
     for item in x86_64_riscv64_failed_top_one_items:
       key = list(item.keys())[0]
@@ -125,7 +140,7 @@ class evaluator:
     print(" \t# pytorch vs riscv64 top one test summary ... \n")
     print(f"\t  - passed cases: {pytorch_riscv64_passed_top_one}")
     print(f"\t  - failed cases: {pytorch_riscv64_failed_top_one}")
-    print(f"\t  - accuracy    : {pytorch_riscv64_passed_top_one*100/num_steps} %\n")
+    print(f"\t  - accuracy    : {pytorch_riscv64_passed_top_one_accuracy} %\n")
     if pytorch_riscv64_failed_top_one > 0: print("\t  - summary report for failed test cases ...\n")
     for item in pytorch_riscv64_failed_top_one_items:
       key = list(item.keys())[0]
@@ -134,9 +149,9 @@ class evaluator:
       print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
       print()
 
-    print(f" verification log can be found at {evaluator.json_path} ...\n")
+    print(f" verification log can be found at {self.json_path} ...\n")
     print(" verification completed ... \n")
 
   def end(self) -> None:
-    json_file = open(evaluator.json_path, 'w')
+    json_file = open(self.json_path, 'w')
     json.dump(self.output_json, json_file, indent=4)

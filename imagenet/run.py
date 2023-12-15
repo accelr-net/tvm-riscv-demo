@@ -52,7 +52,7 @@ def _postprocess(tvm_output: np.ndarray) -> None:
   return top_five_output
 
 def resnet18_session(num_steps: int) -> None:
-  eval = evaluator(platform_arch)
+  eval = evaluator(platform_arch, "./imagenet/log.json")
   dl = dataloader()
   if platform_arch == "x86_64": pt_session = pytorch_session()
   lib_path = "./bin/resnet18_arch.tar".replace("arch", platform_arch)

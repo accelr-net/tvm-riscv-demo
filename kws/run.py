@@ -3,18 +3,48 @@
 import tvm
 from tvm.contrib import graph_executor
 import os
+import pickle
 import platform
 import numpy as np
 from .evaluate import evaluator
 
 platform_arch = platform.machine().lower()
 
+if platform_arch == "x86_64":
+  import torch
+
+labels = pickle.load(open("./models/lable.pickle", 'rb'))
+
+class pytorch_session:
+  def __init__(self, model_path: str="./models/resnet18-kws-best-acc.pt"):
+    self.model = torch.jit.load(model_path)
+    self.model.eval()
+
+  def infer(self, input: np.ndarray) -> np.ndarray:
+    with torch.no_grad():
+      output = self.model(torch.tensor(input))
+    return output.numpy()
+
 def pretty_print(input: str) -> None:
   pad_length = max(0, 100 - len(input))
   print(f"\n{'-' * (pad_length // 2) + input + '-' * (pad_length // 2 + pad_length % 2)}\n\n")
 
+def softmax(input: np.ndarray) -> np.ndarray:
+  shape = input.shape
+  input = input.flatten()
+  softmax_output = np.exp(input)/sum(np.exp(input))
+  return softmax_output.reshape(shape)
+
+def _postprocess(output: np.ndarray) -> None:
+  scores = softmax(output)
+  scores = np.squeeze(scores)
+  ranks = np.argsort(scores)[::-1]
+  top_five_output = [[scores[rank] for rank in ranks[0:5]], [labels[rank] for rank in ranks[0:5]]]
+  return top_five_output
+
 def kws_session(num_steps: int) -> None:
-  eval = evaluator(platform_arch)
+  eval = evaluator(platform_arch, "./kws/log.json")
+  if platform_arch == "x86_64": pt_session = pytorch_session()
   lib_path = "./bin/kws_arch.tar".replace("arch", platform_arch)
   pretty_print(f" TVM kws inference session on {platform_arch} ")
   print(f" dynamic loading compiled library from {lib_path}! \n")
@@ -30,8 +60,14 @@ def kws_session(num_steps: int) -> None:
     data_tensor = np.load(tensor_path, allow_pickle=True)
     runtime_module.set_input("data", data_tensor)
     runtime_module.run()
-    output = runtime_module.get_output(0)
-    eval.log(tensors[tensor_idx], output.numpy()[0])
+    output = runtime_module.get_output(0).asnumpy()
+    top_five_output_tvm = _postprocess(output)
+    eval.log(tensors[tensor_idx], top_five_output_tvm)
+
+    if platform_arch == "x86_64":
+      pytorch_output = pt_session.infer(data_tensor)
+      top_five_output_pytorch = _postprocess(pytorch_output)
+      eval.log(tensors[tensor_idx], top_five_output_pytorch, pt=True)
   
   if platform_arch == "riscv64": eval.process(num_steps)
   eval.end()

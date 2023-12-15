@@ -7,10 +7,10 @@ from tvm import relay
 
 def kwsrn18(target: tvm.target.Target) -> tvm.runtime.Module:
   try:
-    model = torch.jit.load("./models/resnet18-kws-best-acc.pt")    
+    model = torch.jit.load("./models/resnet18-kws-best-acc.pt")
   except Exception as e:
     print(f" error loading the model: {e} \n")
-  
+
   shape_list = [("data", _get_shape())]
   mod, params = relay.frontend.from_pytorch(model, shape_list)
   with tvm.transform.PassContext(opt_level=3, config={}):
