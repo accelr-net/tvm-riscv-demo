@@ -6,3 +6,4 @@ onnx2pytorch
 torchvision
 torchaudio
 librosa
+tqdm

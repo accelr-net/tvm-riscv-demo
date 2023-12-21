@@ -7,6 +7,7 @@ import pickle
 import platform
 import numpy as np
 from .evaluate import evaluator
+from tqdm import tqdm
 
 platform_arch = platform.machine().lower()
 
@@ -55,7 +56,7 @@ def kws_session(num_steps: int) -> None:
   tensors = os.listdir(tensor_dir)
   tensors = [tensor for tensor in tensors if tensor != '.gitignore']
 
-  for tensor_idx in range(num_steps if num_steps >= 0 else len(tensors)):
+  for tensor_idx in tqdm(range(num_steps if num_steps >= 0 else len(tensors))):
     tensor_path = os.path.join(tensor_dir, tensors[tensor_idx])
     data_tensor = np.load(tensor_path, allow_pickle=True)
     runtime_module.set_input("data", data_tensor)

@@ -5,6 +5,7 @@ from tvm.contrib import graph_executor
 import os
 import platform
 import numpy as np
+from tqdm import tqdm
 from  urllib import request
 from .evaluate import evaluator
 from .dataloader import dataloader
@@ -64,7 +65,7 @@ def resnet18_session(num_steps: int) -> None:
   image_dir = "./data/imagenet/tiny-imagenet-200/test/images"
   images = os.listdir(image_dir)
 
-  for image_idx in range(num_steps if num_steps >= 0 else len(images)):
+  for image_idx in tqdm(range(num_steps if num_steps >= 0 else len(images))):
     image_path = os.path.join(image_dir, images[image_idx])
     data_tensor = dl.load(image_path)
     runtime_module.set_input("data", data_tensor)
