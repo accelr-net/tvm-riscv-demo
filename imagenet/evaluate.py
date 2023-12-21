@@ -64,9 +64,9 @@ class evaluator:
       x86_64_scores = np.array(list(map(float, self.output_json[key]["x86_64"]["scores"])))
       riscv64_scores = np.array(list(map(float, self.output_json[key]["riscv64"]["scores"])))
       pytorch_scores = np.array(list(map(float, self.output_json[key]["pytorch"]["scores"])))
-      x86_64_labels = np.array(list(map(float, self.output_json[key]["x86_64"]["labels"])))
-      riscv64_labels = np.array(list(map(float, self.output_json[key]["riscv64"]["labels"])))
-      pytorch_labels = np.array(list(map(float, self.output_json[key]["pytorch"]["labels"])))
+      x86_64_labels = np.array(list(map(str, self.output_json[key]["x86_64"]["labels"])))
+      riscv64_labels = np.array(list(map(str, self.output_json[key]["riscv64"]["labels"])))
+      pytorch_labels = np.array(list(map(str, self.output_json[key]["pytorch"]["labels"])))
 
       if np.allclose(x86_64_scores, riscv64_scores, rtol=1e-05):
         self.output_json[key]["x86_64_riscv64_test_top_five"] = "passed"
