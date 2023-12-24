@@ -60,4 +60,3 @@ def preprocess_speechcommands_data(num_steps: int, data_dir: str) -> None:
     waveform_t, sample_rate_t, label, speaker_id_t, utterance_number_t  = data
     spectogram_t = _mel_conversion(waveform_t,sample_rate_t).numpy()
     np.save(data_dir + label + speaker_id_t + str(utterance_number_t), spectogram_t)
-
