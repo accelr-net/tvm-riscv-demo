@@ -18,7 +18,7 @@ if platform_arch == "x86_64":
   from onnx2pytorch import ConvertModel
 
 labels_url = "https://s3.amazonaws.com/onnx-model-zoo/synset.txt"
-labels_path = "./data/synset.txt"
+labels_path = "./models/synset.txt"
 
 class pytorch_session:
   def __init__(self, model_path: str="./models/resnet18-v2-7.onnx"):

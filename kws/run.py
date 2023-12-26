@@ -2,7 +2,6 @@
 
 import tvm
 from tvm.contrib import graph_executor
-import os
 import pickle
 import platform
 import numpy as np
@@ -72,3 +71,4 @@ def kws_session(num_steps: int) -> None:
   if platform_arch == "riscv64": eval.process(num_steps)
   eval.end()
   pretty_print(f" End of TVM kws inference session on {platform_arch} ")
+  

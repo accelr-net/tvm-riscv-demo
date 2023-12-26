@@ -2,7 +2,6 @@
 
 import os
 import sys
-import glob
 import platform
 import argparse
 
