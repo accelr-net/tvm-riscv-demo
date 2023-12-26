@@ -31,7 +31,6 @@ if __name__ == "__main__":
     from tirop.compile import teop
     from imagenet.compile import resnet18
     from kws.compile import kwsrn18
-    from kws.dataloader import preprocess_speechcommands_data
     import tvm
 
     devices = {
@@ -64,11 +63,7 @@ if __name__ == "__main__":
       if args.kws or args.all:
         kwsrn18_module = kwsrn18(devices["riscv64"])
         kwsrn18_module.export_library("./bin/kws_riscv64.tar")
-    
-    # save speechcommands input data tensors to disk
-    if len(glob.glob(os.path.join("./data/speechcommands/speechtensors/", '*.npy'))) is not int(args.numsteps):
-      print(" preposessing kws data ... \n\n")
-      preprocess_speechcommands_data(int(args.numsteps), "./data/speechcommands/speechtensors/")      
+
   elif platform_arch != "riscv64":
     raise NotImplementedError
 

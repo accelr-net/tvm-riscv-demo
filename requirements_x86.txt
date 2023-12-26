@@ -1,9 +1,11 @@
 numpy
 onnx
-pillow
-torch
+opencv-python
+torch==1.13.0
 onnx2pytorch
-torchvision
-torchaudio
-librosa
+torchvision==0.14.0
+torchaudio==0.13.0
 tqdm
+
+---extra-index-url --index-url https://download.pytorch.org/whl/cpu
+---index-url --index-url https://download.pytorch.org/whl/cpu

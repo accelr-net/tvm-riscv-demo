@@ -7,6 +7,7 @@ import pickle
 import platform
 import numpy as np
 from .evaluate import evaluator
+from .dataloader import SubsetSC, preprocess_speechcommands_data
 from tqdm import tqdm
 
 platform_arch = platform.machine().lower()
@@ -52,23 +53,21 @@ def kws_session(num_steps: int) -> None:
 
   loaded_lib = tvm.runtime.load_module(lib_path)
   runtime_module = graph_executor.GraphModule(loaded_lib["default"](tvm.device("llvm", 0)))
-  tensor_dir = "./data/speechcommands/speechtensors/"
-  tensors = os.listdir(tensor_dir)
-  tensors = [tensor for tensor in tensors if tensor != '.gitignore']
+  dataset = SubsetSC("testing")
 
-  for tensor_idx in tqdm(range(num_steps if num_steps >= 0 else len(tensors))):
-    tensor_path = os.path.join(tensor_dir, tensors[tensor_idx])
-    data_tensor = np.load(tensor_path, allow_pickle=True)
+  for data_idx in tqdm(range(num_steps if num_steps >= 0 else len(dataset))):
+    waveform, sample_rate, label, speaker_id, utterance_number = dataset[data_idx]
+    data_tensor = preprocess_speechcommands_data(waveform, sample_rate)
     runtime_module.set_input("data", data_tensor)
     runtime_module.run()
     output = runtime_module.get_output(0).asnumpy()
     top_five_output_tvm = _postprocess(output)
-    eval.log(tensors[tensor_idx], top_five_output_tvm)
+    eval.log(label + str(speaker_id) + str(utterance_number), top_five_output_tvm)
 
     if platform_arch == "x86_64":
       pytorch_output = pt_session.infer(data_tensor)
       top_five_output_pytorch = _postprocess(pytorch_output)
-      eval.log(tensors[tensor_idx], top_five_output_pytorch, pt=True)
+      eval.log(label + str(speaker_id) + str(utterance_number), top_five_output_pytorch, pt=True)
   
   if platform_arch == "riscv64": eval.process(num_steps)
   eval.end()

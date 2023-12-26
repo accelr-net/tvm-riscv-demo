@@ -3,8 +3,6 @@
 import os
 import torch
 import torchaudio
-import librosa
-from torchvision.transforms import ToTensor
 import numpy as np
 from torchaudio.datasets import SPEECHCOMMANDS
 
@@ -39,9 +37,17 @@ def _reshape(waveform: torch.Tensor, sample_rate: int) -> torch.Tensor:
   waveform = _transform_audio(waveform, sample_rate)
   return waveform
 
+def _power_to_db(s: float, amin: float=1e-16, top_db: float=80.0) -> np.ndarray:
+  # https://gist.github.com/dschwertfeger/f9746bc62871c736e47d5ec3ff4230f7
+  _log10 = lambda x: np.log(x) / np.log(10).astype(np.float32)
+  log_spec = 10.0 * _log10(np.maximum(amin, s))
+  log_spec -= 10.0 * _log10(np.maximum(amin, np.max(s)))
+  log_spec = np.maximum(log_spec, np.max(log_spec) - top_db)
+  return log_spec
+
 def _mel_conversion(waveform: torch.Tensor, sample_rate: int) -> torch.Tensor:
   waveform = _reshape(waveform, sample_rate)
-  spectogram = ToTensor()(librosa.power_to_db(waveform.squeeze().numpy(), ref=np.max))
+  spectogram = torch.tensor(_power_to_db(waveform.squeeze().numpy())).unsqueeze(0)
   spectogram = spectogram.unsqueeze(0)
   return spectogram
 
@@ -51,12 +57,6 @@ def _get_shape() -> torch.Size:
   spectogram = _mel_conversion(waveform,sample_rate)
   return spectogram.shape
 
-def preprocess_speechcommands_data(num_steps: int, data_dir: str) -> None:
-  dataset = SubsetSC("testing")
-  counter = 0
-  for data in dataset:
-    counter = counter + 1
-    if counter > num_steps and num_steps >= 0: break
-    waveform_t, sample_rate_t, label, speaker_id_t, utterance_number_t  = data
-    spectogram_t = _mel_conversion(waveform_t,sample_rate_t).numpy()
-    np.save(data_dir + label + speaker_id_t + str(utterance_number_t), spectogram_t)
+def preprocess_speechcommands_data(waveform: torch.Tensor, sample_rate: int) -> np.ndarray:
+  spectogram_t = _mel_conversion(waveform,sample_rate).numpy()
+  return spectogram_t
