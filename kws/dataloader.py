@@ -51,7 +51,7 @@ def _mel_conversion(waveform: torch.Tensor, sample_rate: int) -> torch.Tensor:
   spectogram = spectogram.unsqueeze(0)
   return spectogram
 
-def _get_shape() -> torch.Size:
+def get_shape() -> torch.Size:
   set = SubsetSC("testing")
   waveform, sample_rate, *_ = set[0]
   spectogram = _mel_conversion(waveform,sample_rate)
