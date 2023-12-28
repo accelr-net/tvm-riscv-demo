@@ -1,0 +1,4 @@
+# imagenet
+
+*.zip
+/tiny-imagenet-200
