@@ -224,6 +224,6 @@ class evaluator:
         "pytorch_x86_64": int(num_steps * 10e9 / self.elapsed_time_ns_pt)
       }
     else:
-      self.output_json["inference_speed(FPS)"]["tvm_riscv64"] = round(num_steps * 10e9 / self.elapsed_time_ns_tvm, 3)
+      self.output_json["inference_speed(FPS)"]["tvm_riscv64"] = round(num_steps * 10e9 / self.elapsed_time_ns_tvm, 4)
     json_file = open(self.json_path, 'w')
     json.dump(self.output_json, json_file, indent=4)
