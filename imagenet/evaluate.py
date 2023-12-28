@@ -9,6 +9,8 @@ class evaluator:
     self.arch = arch; self.output_json = {}
     self.json_path = json_path
     self.step_counter = 0
+    self.elapsed_time_ns_tvm = 0
+    self.elapsed_time_ns_pt = 0
     try:
       if arch == "x86_64":
         json_file = open(self.json_path, 'w')
@@ -20,7 +22,7 @@ class evaluator:
       json_file = open(self.json_path, 'w')
       json.dump({}, json_file)
 
-  def log(self, key: str, output: Tuple[float, str], pt: bool=False) -> None:
+  def log(self, key: str, output: Tuple[float, str], elapsed_time_ns , pt: bool=False) -> None:
     if self.arch == "x86_64" and pt is False:
       self.step_counter += 1
     if key not in self.output_json:
@@ -36,8 +38,12 @@ class evaluator:
         "scores" : [str(i)for i in output[0]],
         "labels" : [str(i)for i in output[1]]
       }
+    if pt:
+      self.elapsed_time_ns_pt += elapsed_time_ns
+    else:
+      self.elapsed_time_ns_tvm += elapsed_time_ns
 
-  def process(self, num_steps: int) -> None:
+  def process(self, num_steps: int, verbose_report: bool) -> None:
     print(" starting verification ... \n")
     print(f" {num_steps} verification test case(s) detected ... \n")
 
@@ -134,77 +140,90 @@ class evaluator:
     print(f"\t  - passed cases: {x86_64_riscv64_passed_top_five}")
     print(f"\t  - failed cases: {x86_64_riscv64_failed_top_five}")
     print(f"\t  - accuracy    : {x86_64_riscv64_passed_top_five_accuracy} %\n")
-    if x86_64_riscv64_failed_top_five > 0: print("\t  - summary report for failed test cases ...\n")
-    for item in x86_64_riscv64_failed_top_five_items:
-      key = list(item.keys())[0]
-      print(f"\titem: {key}")
-      print(f"\tx86_64 scores  : {item[key]['x86_64']['scores']}")
-      print(f"\triscv64 scores : {item[key]['riscv64']['scores']}")
-      print()
+    if verbose_report:
+      if x86_64_riscv64_failed_top_five > 0: print("\t  - summary report for failed test cases ...\n")
+      for item in x86_64_riscv64_failed_top_five_items:
+        key = list(item.keys())[0]
+        print(f"\titem: {key}")
+        print(f"\tx86_64 scores  : {item[key]['x86_64']['scores']}")
+        print(f"\triscv64 scores : {item[key]['riscv64']['scores']}")
+        print()
 
     print(" \t# pytorch vs riscv64 top five test summary ... \n")
     print(f"\t  - passed cases: {pytorch_riscv64_passed_top_five}")
     print(f"\t  - failed cases: {pytorch_riscv64_failed_top_five}")
     print(f"\t  - accuracy    : {pytorch_riscv64_passed_top_five_accuracy} %\n")
-    if pytorch_riscv64_failed_top_five > 0: print("\t  - summary report for failed test cases ...\n")
-    for item in pytorch_riscv64_failed_top_five_items:
-      key = list(item.keys())[0]
-      print(f"\titem: {key}")
-      print(f"\tpytorch scores  : {item[key]['pytorch']['scores']}")
-      print(f"\triscv64 scores : {item[key]['riscv64']['scores']}")
-      print()
+    if verbose_report:
+      if pytorch_riscv64_failed_top_five > 0: print("\t  - summary report for failed test cases ...\n")
+      for item in pytorch_riscv64_failed_top_five_items:
+        key = list(item.keys())[0]
+        print(f"\titem: {key}")
+        print(f"\tpytorch scores  : {item[key]['pytorch']['scores']}")
+        print(f"\triscv64 scores : {item[key]['riscv64']['scores']}")
+        print()
 
     print(" \t# x86_64 vs riscv64 top one test summary ... \n")
     print(f"\t  - passed cases: {x86_64_riscv64_passed_top_one}")
     print(f"\t  - failed cases: {x86_64_riscv64_failed_top_one}")
     print(f"\t  - accuracy    : {x86_64_riscv64_passed_top_one_accuracy} %\n")
-    if x86_64_riscv64_failed_top_one > 0: print("\t  - summary report for failed test cases ...\n")
-    for item in x86_64_riscv64_failed_top_one_items:
-      key = list(item.keys())[0]
-      print(f"\titem: {key}")
-      print(f"\tx86_64 score  : {item[key]['x86_64']['scores'][0]}")
-      print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
-      print()
+    if verbose_report:
+      if x86_64_riscv64_failed_top_one > 0: print("\t  - summary report for failed test cases ...\n")
+      for item in x86_64_riscv64_failed_top_one_items:
+        key = list(item.keys())[0]
+        print(f"\titem: {key}")
+        print(f"\tx86_64 score  : {item[key]['x86_64']['scores'][0]}")
+        print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
+        print()
 
     print(" \t# pytorch vs riscv64 top one test summary ... \n")
     print(f"\t  - passed cases: {pytorch_riscv64_passed_top_one}")
     print(f"\t  - failed cases: {pytorch_riscv64_failed_top_one}")
     print(f"\t  - accuracy    : {pytorch_riscv64_passed_top_one_accuracy} %\n")
-    if pytorch_riscv64_failed_top_one > 0: print("\t  - summary report for failed test cases ...\n")
-    for item in pytorch_riscv64_failed_top_one_items:
-      key = list(item.keys())[0]
-      print(f"\titem: {key}")
-      print(f"\tpytorch score  : {item[key]['pytorch']['scores'][0]}")
-      print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
-      print()
+    if verbose_report:
+      if pytorch_riscv64_failed_top_one > 0: print("\t  - summary report for failed test cases ...\n")
+      for item in pytorch_riscv64_failed_top_one_items:
+        key = list(item.keys())[0]
+        print(f"\titem: {key}")
+        print(f"\tpytorch score  : {item[key]['pytorch']['scores'][0]}")
+        print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
+        print()
 
     print(" \t# x86_64 vs riscv64 high level test summary ... \n")
     print(f"\t  - passed cases: {x86_64_riscv64_passed_high_level}")
     print(f"\t  - failed cases: {x86_64_riscv64_failed_high_level}")
     print(f"\t  - accuracy    : {x86_64_riscv64_passed_high_level_accuracy} %\n")
-    if x86_64_riscv64_failed_high_level > 0: print("\t  - summary report for failed test cases ...\n")
-    for item in x86_64_riscv64_failed_high_level_items:
-      key = list(item.keys())[0]
-      print(f"\titem: {key}")
-      print(f"\tx86_64 score  : {item[key]['x86_64']['scores'][0]}")
-      print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
-      print()
+    if verbose_report:
+      if x86_64_riscv64_failed_high_level > 0: print("\t  - summary report for failed test cases ...\n")
+      for item in x86_64_riscv64_failed_high_level_items:
+        key = list(item.keys())[0]
+        print(f"\titem: {key}")
+        print(f"\tx86_64 score  : {item[key]['x86_64']['scores'][0]}")
+        print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
+        print()
 
     print(" \t# pytorch vs riscv64 high level test summary ... \n")
     print(f"\t  - passed cases: {pytorch_riscv64_passed_high_level}")
     print(f"\t  - failed cases: {pytorch_riscv64_failed_high_level}")
     print(f"\t  - accuracy    : {pytorch_riscv64_passed_high_level_accuracy} %\n")
-    if pytorch_riscv64_failed_high_level > 0: print("\t  - summary report for failed test cases ...\n")
-    for item in pytorch_riscv64_failed_high_level_items:
-      key = list(item.keys())[0]
-      print(f"\titem: {key}")
-      print(f"\tpytorch score  : {item[key]['pytorch']['scores'][0]}")
-      print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
-      print()
+    if verbose_report:
+      if pytorch_riscv64_failed_high_level > 0: print("\t  - summary report for failed test cases ...\n")
+      for item in pytorch_riscv64_failed_high_level_items:
+        key = list(item.keys())[0]
+        print(f"\titem: {key}")
+        print(f"\tpytorch score  : {item[key]['pytorch']['scores'][0]}")
+        print(f"\triscv64 score : {item[key]['riscv64']['scores'][0]}")
+        print()
 
     print(f" verification log can be found at {self.json_path} ...\n")
     print(" verification completed ... \n")
 
-  def end(self) -> None:
+  def end(self, arch: str, num_steps: int) -> None:
+    if arch == "x86_64":
+      self.output_json["inference_speed(FPS)"] = {
+        "tvm_x86_64": int(num_steps * 10e9 / self.elapsed_time_ns_tvm),
+        "pytorch_x86_64": int(num_steps * 10e9 / self.elapsed_time_ns_pt)
+      }
+    else:
+      self.output_json["inference_speed(FPS)"]["tvm_riscv64"] = round(num_steps * 10e9 / self.elapsed_time_ns_tvm, 3)
     json_file = open(self.json_path, 'w')
     json.dump(self.output_json, json_file, indent=4)

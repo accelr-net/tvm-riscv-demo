@@ -8,11 +8,12 @@ import argparse
 if __name__ == "__main__":
   platform_arch = platform.machine().lower()
   parser = argparse.ArgumentParser()
-  parser.add_argument("-s", "--numsteps", help = "number of examples from the testset which the test should be done", default=10)
   parser.add_argument("-t", "--tirop", help="activate tensor ir operation test", default=False)
   parser.add_argument("-i", "--imagenet", help="activate imagenet test", default=False)
   parser.add_argument("-k", "--kws", help="activate kws test", default=False)
   parser.add_argument("-a", "--all", help="activate all tests", default=False)
+  parser.add_argument("-s", "--numsteps", help = "number of examples from the testset which the test should be done", default=10)
+  parser.add_argument("-v", "--verbose", help = "verbose report for failed test cases in console", default=False)
   args = parser.parse_args()
 
   print("\n")
@@ -72,12 +73,12 @@ if __name__ == "__main__":
   from kws.run import kws_session
 
   if args.tirop: teop_session()
-  if args.imagenet: resnet18_session(int(args.numsteps))
-  if args.kws: kws_session(int(args.numsteps))
+  if args.imagenet: resnet18_session(int(args.numsteps), bool(args.tirop))
+  if args.kws: kws_session(int(args.numsteps), bool(args.tirop))
   if args.all:
     teop_session()
-    resnet18_session(int(args.numsteps))
-    kws_session(int(args.numsteps))
+    resnet18_session(int(args.numsteps), bool(args.tirop))
+    kws_session(int(args.numsteps), bool(args.tirop))
 
   print("-------------------")
   print("~ End of the Demo ~")
