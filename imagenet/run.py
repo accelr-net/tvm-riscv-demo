@@ -3,6 +3,7 @@
 import tvm
 from tvm.contrib import graph_executor
 import os
+import glob
 import time
 import platform
 import numpy as np
@@ -66,12 +67,14 @@ def resnet18_session(num_steps: int, verbose_report: bool) -> None:
 
   loaded_lib = tvm.runtime.load_module(lib_path)
   runtime_module = graph_executor.GraphModule(loaded_lib["default"](tvm.device("llvm", 0)))
-  image_dir = "./data/imagenet/tiny-imagenet-200/test/images"
-  images = os.listdir(image_dir)
+  image_dir = "./data/imagenet/valset/val"
+  images = glob.glob(image_dir + '/**/*.JPEG', recursive=True)
+  correct_tvm = 0; correct_pt = 0
+  count = num_steps if num_steps >= 0 else len(images)
 
-  for image_idx in tqdm(range(num_steps if num_steps >= 0 else len(images))):
-    image_path = os.path.join(image_dir, images[image_idx])
-    data_tensor = dl.load(image_path)
+  for image_idx in tqdm(range(count)):
+    label = images[image_idx].split('/')[5]
+    data_tensor = dl.load(images[image_idx])
     start_time_tvm = time.time_ns()
     runtime_module.set_input("data", data_tensor)
     runtime_module.run()
@@ -79,13 +82,16 @@ def resnet18_session(num_steps: int, verbose_report: bool) -> None:
     end_time_tvm = time.time_ns()
     elapsed_time_ns_tvm = end_time_tvm - start_time_tvm
     top_five_output_tvm = _postprocess(output)
+    correct_tvm = correct_tvm + 1 if label == top_five_output_tvm[1][0].split(' ')[0] else correct_tvm
     eval.log(images[image_idx], top_five_output_tvm, elapsed_time_ns_tvm)
 
     if platform_arch == "x86_64":
       pytorch_output, elapsed_time_ns_pt = pt_session.infer(data_tensor)
       top_five_output_pytorch = _postprocess(pytorch_output)
+      correct_pt = correct_pt + 1 if label == top_five_output_pytorch[1][0].split(' ')[0] else correct_pt
       eval.log(images[image_idx], top_five_output_pytorch, elapsed_time_ns_pt, pt=True)
   
   if platform_arch == "riscv64": eval.process(num_steps, verbose_report)
-  eval.end(platform_arch, num_steps)
+  accuracy_tvm = correct_tvm/count; accuracy_pt = correct_pt/count
+  eval.end(platform_arch, num_steps, accuracy_tvm, accuracy_pt)
   pretty_print(f" End of TVM resnet18 inference session on {platform_arch} ")

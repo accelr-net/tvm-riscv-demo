@@ -1,4 +1,4 @@
 # imagenet
 
-*.zip
-/tiny-imagenet-200
+*.xz
+/valset

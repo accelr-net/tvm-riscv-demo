@@ -11,12 +11,13 @@ class dataloader:
   tinyimagenet_path = "./data/imagenet/tiny-imagenet-200.zip"
 
   def __init__(self):
-    if not os.path.exists(dataloader.tinyimagenet_path):
-      request.urlretrieve(dataloader.tinyimagenet_url, dataloader.tinyimagenet_path)
+    pass
+    # if not os.path.exists(dataloader.tinyimagenet_path):
+    #   request.urlretrieve(dataloader.tinyimagenet_url, dataloader.tinyimagenet_path)
 
-    if not os.path.exists("./data/imagenet/tiny-imagenet-200"):
-      with zipfile.ZipFile(dataloader.tinyimagenet_path, 'r') as zip_ref:
-        zip_ref.extractall("./data/imagenet/")
+    # if not os.path.exists("./data/imagenet/tiny-imagenet-200"):
+    #   with zipfile.ZipFile(dataloader.tinyimagenet_path, 'r') as zip_ref:
+    #     zip_ref.extractall("./data/imagenet/")
 
   def _imagenet_transforms(image: "cv2.typing.MatLike") -> np.ndarray:
     resized_image = cv2.resize(image, (224, 224))

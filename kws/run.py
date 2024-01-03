@@ -57,8 +57,10 @@ def kws_session(num_steps: int, verbose_report: bool) -> None:
   loaded_lib = tvm.runtime.load_module(lib_path)
   runtime_module = graph_executor.GraphModule(loaded_lib["default"](tvm.device("llvm", 0)))
   dataset = SubsetSC("testing")
+  correct_tvm = 0; correct_pt = 0
+  count = num_steps if num_steps >= 0 else len(dataset)
 
-  for data_idx in tqdm(range(num_steps if num_steps >= 0 else len(dataset))):
+  for data_idx in tqdm(range(count)):
     waveform, sample_rate, label, speaker_id, utterance_number = dataset[data_idx]
     data_tensor = preprocess_speechcommands_data(waveform, sample_rate)
     start_time_tvm = time.time_ns()
@@ -68,13 +70,16 @@ def kws_session(num_steps: int, verbose_report: bool) -> None:
     end_time_tvm = time.time_ns()
     elapsed_time_ns_tvm = end_time_tvm - start_time_tvm
     top_five_output_tvm = _postprocess(output)
+    correct_tvm = correct_tvm + 1 if label == top_five_output_tvm[1][0] else correct_tvm
     eval.log(label + str(speaker_id) + str(utterance_number), top_five_output_tvm, elapsed_time_ns_tvm)
 
     if platform_arch == "x86_64":
       pytorch_output, elapsed_time_ns_pt = pt_session.infer(data_tensor)
       top_five_output_pytorch = _postprocess(pytorch_output)
+      correct_pt = correct_pt + 1 if label == top_five_output_pytorch[1][0] else correct_pt
       eval.log(label + str(speaker_id) + str(utterance_number), top_five_output_pytorch, elapsed_time_ns_pt, pt=True)
   
   if platform_arch == "riscv64": eval.process(num_steps, verbose_report)
-  eval.end(platform_arch, num_steps)
+  accuracy_tvm = correct_tvm/count; accuracy_pt = correct_pt/count
+  eval.end(platform_arch, num_steps, accuracy_tvm, accuracy_pt)
   pretty_print(f" End of TVM kws inference session on {platform_arch} ")
