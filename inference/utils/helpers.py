@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def softmax(input: np.ndarray) -> np.ndarray:
   shape = input.shape
   input = input.flatten()

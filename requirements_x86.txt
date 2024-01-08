@@ -1,7 +1,0 @@
-numpy
-onnx
-torch==1.13.0 --index-url https://download.pytorch.org/whl/cpu
-onnx2pytorch
-torchvision==0.14.0 --index-url https://download.pytorch.org/whl/cpu
-torchaudio==0.13.0 --index-url https://download.pytorch.org/whl/cpu
-tqdm

@@ -11,14 +11,15 @@ from typing import List, Tuple
 
 class ImagenetDataLoader:
   def __init__(self, num_steps: int) ->  None:
-    if not os.path.exists("./data/imagenet/valset"):
-      with tarfile.open("./data/imagenet/valset.tar.xz", 'r:xz') as tar:
-        tar.extractall("./data/imagenet/valset")
-    image_dir = "./data/imagenet/valset/val"
-    image_titles = glob.glob(image_dir + '/**/*.JPEG', recursive=True)
-    self.data = []
-    for i in range(num_steps if num_steps < len(image_titles) else len(image_titles)):
-      self.data.append((ImagenetDataLoader._load(image_titles[i]), 0, image_titles[i].split('/')[5], 0, image_titles[i].split('/')[6]))
+    if not os.path.exists("./data/imagenet/imagenet10"):
+      with tarfile.open("./data/imagenet/imagenet10.tar.gz", 'r:gz') as tar:
+        tar.extractall("./data/imagenet/imagenet10")
+    image_dir = "./data/imagenet/imagenet10/anuradha/work/data.imagenet/val"
+    titles = glob.glob(image_dir + '/**/*.JPEG', recursive=True)
+    self.processed_dataset = []
+    for i in range(num_steps if num_steps < len(titles) else len(titles)):
+      title = titles[i].split('/')
+      self.processed_dataset.append((ImagenetDataLoader._load(titles[i]), 0, title[-2], 0, title[-1]))
 
   @staticmethod
   def _imagenet_transforms(image: "cv2.typing.MatLike") -> np.ndarray:
@@ -49,4 +50,4 @@ class ImagenetDataLoader:
     return top_five_output
 
   def get_data(self) -> List[tuple]:
-    return self.data
+    return self.processed_dataset

@@ -1,4 +1,4 @@
 # imagenet
 
-*.xz
-/valset
+*.gz
+/imagenet10
