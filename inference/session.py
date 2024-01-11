@@ -16,7 +16,7 @@ class InferenceSession:
   - Provides a factory to create inference sessions from models.
   - Creates corresponding dataloader bojects.
   - Executes the models using a unified method.
-  - Calls the evaluator to evaluate the resilts.
+  - Calls the evaluator to evaluate the results.
   """
 
   def __init__(self, model: str, arch: str, num_steps: int, pt: bool=False):
