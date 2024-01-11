@@ -15,7 +15,7 @@ class Compiler:
     "x86_64"  : tvm.target.Target("llvm")
   }
 
-  def __init__(self, platform: str) -> None:
+  def __init__(self, platform: str):
     self.platform = platform
     self.device = Compiler.devices[platform]
   

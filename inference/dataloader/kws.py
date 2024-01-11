@@ -31,7 +31,7 @@ class KWSDataLoader:
         excludes = set(excludes)
         self._walker = [w for w in self._walker if w not in excludes]
 
-  def __init__(self, num_steps: int) -> None:
+  def __init__(self, num_steps: int):
     scsubset = KWSDataLoader.SpeechCommandsSubset("validation")
     self.processed_dataset = []
     for i in range(num_steps if num_steps < len(scsubset) else len(scsubset)):
@@ -40,12 +40,28 @@ class KWSDataLoader:
 
   @staticmethod
   def _transform_audio(audio: torch.Tensor, sr: int) -> torch.Tensor:
+    """
+    Transforms the audio to a mel spectrogram.
+
+    Args:
+      - audio(torch.Tensor) : audio waveform as a torch.Tensor object
+      - sr(int)             : sampling rate
+    """
+
     trnsfrm = torchaudio.transforms.MelSpectrogram(sample_rate=sr, n_fft=1024, win_length=None, hop_length=512, n_mels=128, power=2.0)
     transformed = trnsfrm(audio)
     return transformed
 
   @staticmethod
   def _reshape(waveform: torch.Tensor, sample_rate: int) -> torch.Tensor:
+    """
+    Reshapes the audio waveform.
+
+    Args:
+      - audio(torch.Tensor) : audio waveform as a torch.Tensor object
+      - sr(int)             : sampling rate
+    """
+
     if waveform.shape[-1] < sample_rate :
       waveform = torch.cat([waveform, torch.zeros((1, sample_rate - waveform.shape[-1]))], dim=-1)
     elif waveform.shape[-1] > sample_rate:
@@ -54,8 +70,15 @@ class KWSDataLoader:
     return waveform
 
   @staticmethod
-  def _power_to_db(s: float, amin: float=1e-16, top_db: float=80.0) -> np.ndarray:
-    # https://gist.github.com/dschwertfeger/f9746bc62871c736e47d5ec3ff4230f7
+  def _power_to_db(s: np.ndarray, amin: float=1e-16, top_db: float=80.0) -> np.ndarray:
+    """
+    Converts the input to decibel.
+
+    Args:
+      - s(np.ndarray) : input
+    """
+
+    # developed with reference to https://gist.github.com/dschwertfeger/f9746bc62871c736e47d5ec3ff4230f7
     log10_ = lambda x: np.log(x) / np.log(10).astype(np.float32)
     log_spec = 10.0 * log10_(np.maximum(amin, s))
     log_spec -= 10.0 * log10_(np.maximum(amin, np.max(s)))
@@ -75,6 +98,13 @@ class KWSDataLoader:
     return spectogram_t
 
   def postprocess(self, output: np.ndarray) -> Tuple[List[float], List[str]]:
+    """
+    Performs the postprocessing for model outputs.
+
+    Args:
+      - model_output(np.ndarray): model output as a numpy array
+    """
+
     labels = pickle.load(open("./models/lable.pickle", 'rb'))
     scores = softmax(output)
     scores = np.squeeze(scores)

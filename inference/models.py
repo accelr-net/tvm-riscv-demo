@@ -6,7 +6,11 @@ import numpy as np
 
 
 class Model:
-  def __init__(self, model_path: str, architecture: str, pt: bool=False) -> None:
+  """
+  Abstract base class for defining a model.
+  """
+
+  def __init__(self, model_path: str, architecture: str, pt: bool=False):
     self.model_path = model_path
     self.architecture = architecture
     self.ispytorch = pt
@@ -16,7 +20,12 @@ class Model:
 
 
 class Imagenet(Model):
-  def __init__(self, model_path: str, architecture: str, pt: bool=False) -> None:
+  """
+  Imagenet model, extends model.
+  Contains inference pipeline for both tvm and pytorch sessions.
+  """
+
+  def __init__(self, model_path: str, architecture: str, pt: bool=False):
     super().__init__(model_path, architecture, pt)
     if not self.ispytorch:
       loaded_lib = tvm.runtime.load_module(self.model_path)
@@ -40,7 +49,12 @@ class Imagenet(Model):
 
 
 class KWS(Model):
-  def __init__(self, model_path: str, architecture: str, pt: bool=False) -> None:
+  """
+  KWS model, extends model.
+  Contains inference pipeline for both tvm and pytorch sessions.
+  """
+
+  def __init__(self, model_path: str, architecture: str, pt: bool=False):
     super().__init__(model_path, architecture, pt)
     if not self.ispytorch:
       loaded_lib = tvm.runtime.load_module(self.model_path)
