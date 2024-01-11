@@ -36,13 +36,10 @@ class evaluator:
     self.elapsed_time_ns = 0
     os.makedirs("./tmp", exist_ok=True)
 
-    # creating the files in x86_64 and read the files in riscv64
-    if arch == "x86_64":
-      json_file = open(self.log_path, 'w')
-      json.dump(self.log_json, json_file)
-    else:
-      json_file = open(self.log_path, 'r')
-      self.log_json = json.load(json_file)
+    json_file = open(self.log_path, 'w')
+    json.dump(self.log_json, json_file)
+    json_file = open(self.log_path, 'r')
+    self.log_json = json.load(json_file)
 
   def log(self, key: str, output: Tuple[float, str], elapsed_time_ns: int) -> None:
     """
