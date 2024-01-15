@@ -12,25 +12,6 @@
 </div>
 </p>
 
-<style>
-  .banner {
-    background-color: #f0f0f0;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: Left;
-  }
-
-  .banner h4 {
-    color: #333;
-  }
-
-  .banner p {
-    font-style: italic;
-  }
-</style>
-
-
 ## Introduction
 This repository contains the demo application we have created to run and benchmark Image Classification and KWS (Key Word Spotting) models on a [QEMU](https://www.qemu.org/) emulated [RV64IMFD](https://www3.diism.unisi.it/~giorgi/didattica/tools1/RISCV_ISA_TABLE-v11.pdf) Ubuntu Linux system through [Apache TVM](https://tvm.apache.org/).
 
@@ -69,23 +50,41 @@ Edit the copied file as follows to configure the build.
 
 Change expression `set(USE_LLVM OFF)` to `set(USE_LLVM ON)`.
 
-<div class="banner">
-  <h4>Note:</h4>
-  <p>
-  The above change means the TVM includes the binaries from the LLVM installation in your computer for TVM code generation. Therefore It is required to have LLVM installed beforehand.
+__Note:__
+The above change means the TVM includes the binaries from the LLVM installation in your computer for TVM code generation. Therefore It is required to have LLVM installed beforehand.
 
-  You can check whether you have an already installed version of LLVM in your computer by executing the following command.
-  ```bash
-  llc --version
-  ```
+You can check whether you have an already installed version of LLVM in your computer by executing the following command.
+```bash
+llc --version
+```
 
-  If not install LLVM by executing the following command.
-  ```bash
-  bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-  ```
+If not install LLVM by executing the following command.
+```bash
+bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+```
 
-  A more comprehensive guide to LLVM installation from pre-built binaries can be found [here](https://apt.llvm.org/).
-  </p>
-</div>
+A more comprehensive guide to LLVM installation from pre-built binaries can be found [here](https://apt.llvm.org/).
+
+Configure and execute the build with the following commands (replace 4 with number of parallel compile jobs you need to run in your computer).
+```bash
+cmake ..
+make -j4
+```
+
+Now run the python installation to register TVM as a pip package.
+```bash
+cd ../python
+python setup.py install --user
+cd ..
+```
+
+Note that the `--user` flag is not necessary if you’re installing to a managed local environment, like `virtualenv`.
+
+TVM is installed in the host now. You can check the instillation by executing the following command.
+```bash
+python -c "import tvm; print(tvm.__version__)"
+```
+
+A comprehensive guide for the build process can be found [here](https://tvm.apache.org/docs/v0.10.0/install/from_source.html).
 
 #### a
