@@ -15,8 +15,6 @@
 ## Introduction
 This repository contains the demo application we have created to run and benchmark Image Classification and KWS (Key Word Spotting) models on a [QEMU](https://www.qemu.org/) emulated [RV64IMFD](https://www3.diism.unisi.it/~giorgi/didattica/tools1/RISCV_ISA_TABLE-v11.pdf) Ubuntu Linux system through [Apache TVM](https://tvm.apache.org/).
 
----
-
 ## Demonstration Workflow
 Fist follow the instructions [here](./docs/ubuntu_qemu.md)  prepare a QEMU emulated RISC-V environment on an x86_64 system. Additionally, create a shared directory between the host and guest according to given guidelines. *For the rest of the guide, x86_64 system will be called the "host", and RISC-V system will be called the "guest".*
 
@@ -207,8 +205,6 @@ sudo pip install torchaudio-0.13.0+bc8640b-cp38-cp38-linux_riscv64.whl
 
 Execute the same `python run.py -a True -s 5` like command in guest side to run the guest side half of the demo.
 
----
-
 ## Directory Stucture
 
 ```
@@ -240,5 +236,3 @@ Execute the same `python run.py -a True -s 5` like command in guest side to run 
     ├── requirements.txt
     └── run.py
 ```
-
----
