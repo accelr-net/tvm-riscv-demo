@@ -3,7 +3,7 @@ import argparse
 
 from inference.utils.helpers import pretty_print
 
-from compiler.compile import Compiler as compiler
+from compiler.ModelBuilder import ModelBuilder
 
 
 def main(args: argparse.Namespace) -> None:
@@ -14,27 +14,27 @@ def main(args: argparse.Namespace) -> None:
   print("-----------------------------------------------------")
   print("\n")
 
-  x86_64_compiler = compiler("x86_64")
-  riscv64_compiler = compiler("riscv64")
+  x86ModelBuilder = ModelBuilder("x86_64")
+  riscv64ModelBuilder = ModelBuilder("riscv64")
 
   if args.x86_64 or args.both_archs:
     pretty_print(" compiling for x86_64 ")
     if args.imagenet or args.all_models:
       print("   - imagenet... \n")
-      x86_64_compiler.compile("imagenet")
+      x86ModelBuilder.build("imagenet")
     if args.kws or args.all_models:
       print("\n   - kws... \n")
-      x86_64_compiler.compile("kws")
+      x86ModelBuilder.build("kws")
     pretty_print(" compilation for x86_64 completed ")
 
   if args.riscv64 or args.both_archs:
     pretty_print(" compiling for riscv64 ")
     if args.imagenet or args.all_models:
       print("   - imagenet... \n")
-      riscv64_compiler.compile("imagenet")
+      riscv64ModelBuilder.build("imagenet")
     if args.kws or args.all_models:
       print("\n   - kws... \n")
-      riscv64_compiler.compile("kws")
+      riscv64ModelBuilder.build("kws")
     pretty_print(" compilation for riscv64 completed ")
 
   print()
