@@ -14,7 +14,7 @@ class ImagenetDataLoader:
     if not os.path.exists("./data/imagenet/imagenet10"):
       with tarfile.open("./data/imagenet/imagenet10.tar.gz", 'r:gz') as tar:
         tar.extractall("./data/imagenet/imagenet10")
-    image_dir = "./data/imagenet/imagenet10/anuradha/work/data.imagenet/val"
+    image_dir = "./data/imagenet/imagenet10/val"
     titles = glob.glob(image_dir + '/**/*.JPEG', recursive=True)
     self.processed_dataset = []
     for i in range(num_steps if num_steps < len(titles) else len(titles)):
