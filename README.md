@@ -165,7 +165,7 @@ The command line arguments are explained below and can be executed accordingly.
   -b , --both_archs compile for both architectures, (True/False), Default: False
 ```
 
-3. Execute the following command on _host_ side to run the _host_ side half of the demo.
+4. Execute the following command on _host_ side to run the _host_ side half of the demo.
 ```bash
 Explaination: python run.py -a/-i/-k/-m/-w True -s N
 Example: python run.py -a True -s 5
@@ -181,7 +181,7 @@ The command line arguments are explained below and can be executed accordingly.
 -s : Number of test cases to be tested in Imagenet and KWS tests, (N: [-1,..n], N=-1 = All test cases available, N > -1: n test cases), Default: 10
 ```
 
-4. Navigate to the repo which is in the shared directory in _guest_ and install the dependencies on _guest_ by executing the following commands.
+5. Navigate to the repo which is in the shared directory in _guest_ and install the dependencies on _guest_ by executing the following commands.
 
 ```bash
 pip install -r requirements.txt
@@ -194,7 +194,7 @@ sudo pip install torch-1.13.0a0+gitd1c1acd-cp38-cp38-linux_riscv64.whl
 sudo pip install torchaudio-0.13.0+bc8640b-cp38-cp38-linux_riscv64.whl
 ```
 
-5. Execute the same `python run.py -a True -s 5` like command in _guest_ side to run the _guest_ side half of the demo.
+6. Execute the same `python run.py -a True -s 5` like command in _guest_ side to run the _guest_ side half of the demo.
 ```bash
 Example: python run.py -a True -s 5
 ```
