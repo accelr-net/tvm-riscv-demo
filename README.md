@@ -79,7 +79,6 @@ Change expression `set(USE_LLVM OFF)` in line 82 to `set(USE_LLVM ON)` as foll
 #        which is needed for most cases
 # - /path/to/llvm-config: enable specific LLVM when multiple llvm-dev is available.
 set(USE_LLVM ON)
-
 ```
 
 6. Configure and execute the build with the following commands (replace 4 with number of parallel compile jobs you need to run in your computer).
