@@ -16,9 +16,12 @@ class ModelBuilder:
   }
 
   def __init__(self, platform: str):
-    # ToDo: Check if platform is in devices dict
-    self.platform = platform
-    self.device = ModelBuilder.devices[platform]
+    try:
+      self.platform = platform
+      self.device = ModelBuilder.devices[platform]
+    except Exception as e:
+      print(f" platform {platform} is not supported: {e} \n")
+    
   
   @staticmethod
   def _imagenet_resnet18(target: tvm.target.Target) -> tvm.runtime.Module:
