@@ -9,15 +9,19 @@ from tvm import relay
 from typing import Dict
 
 
-class Compiler:
+class ModelBuilder:
   devices: Dict[str, tvm.target.Target] = {
     "riscv64" : tvm.target.Target("llvm -mtriple=riscv64-unknown-linux-gnu -mcpu=generic-rv64 -mabi=lp64d -mattr=+64bit,+m,+f,+d"),
     "x86_64"  : tvm.target.Target("llvm")
   }
 
   def __init__(self, platform: str):
-    self.platform = platform
-    self.device = Compiler.devices[platform]
+    try:
+      self.platform = platform
+      self.device = ModelBuilder.devices[platform]
+    except Exception as e:
+      print(f" platform {platform} is not supported: {e} \n")
+    
   
   @staticmethod
   def _imagenet_resnet18(target: tvm.target.Target) -> tvm.runtime.Module:
@@ -47,13 +51,13 @@ class Compiler:
       lib = relay.build(mod, target=target, params=params)
     return lib
 
-  def compile(self,  model: str) -> None:
+  def build(self,  model: str) -> None:
     binary_path = f"./bin/{model}_{self.platform}.tar"
     if model == "imagenet":
       if not os.path.exists(binary_path):
-        imagenet_module = Compiler._imagenet_resnet18(self.device)
+        imagenet_module = ModelBuilder._imagenet_resnet18(self.device)
         imagenet_module.export_library(binary_path)
     if model == "kws":
       if not os.path.exists(binary_path):
-        kws_module = Compiler._kws_resnet18(self.device)
+        kws_module = ModelBuilder._kws_resnet18(self.device)
         kws_module.export_library(binary_path)
