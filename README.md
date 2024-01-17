@@ -211,12 +211,12 @@ Example: python run.py -a True -s 5
     │   ├── imagenet
     │   └── speechcommands
     ├── inference                        [Contains the tools required for model inference]
-    │   ├── dataloader
+    │   ├── dataloader                   [Contains dataloaders for each model]
     │   │   ├── imagenet.py
     │   │   └── kws.py
     │   ├── models.py
     │   ├── session.py
-    │   └── utils
+    │   └── utils                        [Contains the utility tools required for evaluation]
     │       ├── evaluate.py
     │       └── helpers.py
     ├── LICENSE
