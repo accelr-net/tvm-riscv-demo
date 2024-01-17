@@ -31,7 +31,7 @@ You can check whether you have an already installed version of LLVM in your comp
 llc --version
 ```
 
-If not install LLVM by executing the following command.
+If not, install LLVM by executing the following command.
 ```bash
 bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 ```
@@ -68,7 +68,7 @@ cp cmake/config.cmake build
 cd build
 ```
 
-5. Edit the copied file as follows to configure the build.
+5. Edit the copied `config.cmake` file as follows to configure the build.
 
 Change expression `set(USE_LLVM OFF)` in line 82 to `set(USE_LLVM ON)` as follows.
 
@@ -203,14 +203,14 @@ Example: python run.py -a True -s 5
 ```
 .
 └── tvm-riscv-demo
-    ├── bin
+    ├── bin                              [Contains model binaries after compilation]
     ├── compile.py
-    ├── compiler
+    ├── compiler                         [Contains the tools required for model compilation]
     │   └── ModelBuilder.py
-    ├── data
+    ├── data                             [Contains datasets]
     │   ├── imagenet
     │   └── speechcommands
-    ├── inference
+    ├── inference                        [Contains the tools required for model inference]
     │   ├── dataloader
     │   │   ├── imagenet.py
     │   │   └── kws.py
@@ -220,7 +220,7 @@ Example: python run.py -a True -s 5
     │       ├── evaluate.py
     │       └── helpers.py
     ├── LICENSE
-    ├── models
+    ├── models                           [Contains model and label files]
     │   ├── lable.pickle
     │   ├── resnet18-kws-best-acc.pt
     │   ├── resnet18-v2-7.onnx
