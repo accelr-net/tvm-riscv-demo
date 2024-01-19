@@ -1,5 +1,3 @@
-import os
-import tarfile
 import glob
 import cv2
 import numpy as np
@@ -11,9 +9,6 @@ from typing import List, Tuple
 
 class ImagenetDataLoader:
   def __init__(self, num_steps: int):
-    if not os.path.exists("./data/imagenet/imagenet10"):
-      with tarfile.open("./data/imagenet/imagenet10.tar.gz", 'r:gz') as tar:
-        tar.extractall("./data/imagenet/imagenet10")
     image_dir = "./data/imagenet/imagenet10/val"
     titles = glob.glob(image_dir + '/**/*.JPEG', recursive=True)
     self.processed_dataset = []
