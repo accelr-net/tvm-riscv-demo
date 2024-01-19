@@ -152,7 +152,6 @@ sudo apt-get install python3-opencv
 python data/imagenet/generate_imagenet10.py <PATH TO `/val` DIRECTORY OF IMAGENET VALIDATION SET>
 ```
 
-
 4. Execute the following command on _host_ side to compile the models for both the _host_ and the _guest_ using TVM.
 ```bash
 Explaination: python compile.py -a/-i/-k True -b/-x/-r True
