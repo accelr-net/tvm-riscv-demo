@@ -186,8 +186,8 @@ The command line arguments are explained below and can be executed accordingly.
 pip install -r requirements.txt
 sudo apt-get install python3-opencv
 
-wget <PYTORCH_WHEEL_LINK>
-wget <TORCHAUDIO_WHEEL_LINK>
+wget https://tvm-public.s3.us-east-2.amazonaws.com/torch-1.13.0a0%2Bgitd1c1acd-cp38-cp38-linux_riscv64.whl
+wget https://tvm-public.s3.us-east-2.amazonaws.com/torchaudio-0.13.0%2Bbc8640b-cp38-cp38-linux_riscv64.whl
 
 sudo pip install torch-1.13.0a0+gitd1c1acd-cp38-cp38-linux_riscv64.whl
 sudo pip install torchaudio-0.13.0+bc8640b-cp38-cp38-linux_riscv64.whl
