@@ -47,9 +47,8 @@ def main(args: argparse.Namespace) -> None:
 
   if architecture == "riscv64":
     print(" generating evaluation reports ... \n")
-    if args.imagenet or args.all_models:
+    if args.all_models:
       imagenet_session.evaluate()
-    if args.kws or args.all_models:
       kws_session.evaluate()
 
   print("\n")
