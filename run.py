@@ -47,9 +47,13 @@ def main(args: argparse.Namespace) -> None:
 
   if architecture == "riscv64":
     print(" generating evaluation reports ... \n")
-    if args.all_models:
+    if (args.imagenet and args.imagenet_pt) or args.all_models:
       imagenet_session.evaluate()
+    if (args.kws and args.kws_pt) or args.all_models:
       kws_session.evaluate()
+    else:
+      print("\n skipping evaluation process... ")
+      print(" both Pytorch & TVM sessions are required for evaluation! \n")
 
   print("\n")
   print("---------------------")

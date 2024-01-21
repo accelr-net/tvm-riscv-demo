@@ -9,8 +9,8 @@ from typing import List, Tuple
 
 class ImagenetDataLoader:
   def __init__(self, num_steps: int):
-    image_dir = "./data/imagenet/imagenet10/val"
-    titles = glob.glob(image_dir + '/**/*.JPEG', recursive=True)
+    self.image_dir = "./data/imagenet/imagenet10/val"
+    titles = glob.glob(self.image_dir + '/**/*.JPEG', recursive=True)
     self.processed_dataset = []
     for i in range(num_steps if num_steps < len(titles) else len(titles)):
       title = titles[i].split('/')
@@ -59,4 +59,7 @@ class ImagenetDataLoader:
     return top_five_output
 
   def get_data(self) -> List[tuple]:
+    if len(self.processed_dataset) == 0:
+      print(f" data not available at {self.image_dir} \n")
+      exit(1)
     return self.processed_dataset
